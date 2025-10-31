@@ -2,6 +2,7 @@ import logging
 import re
 import time
 import datetime
+import json
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -428,6 +429,13 @@ class iface_MP_Group:  # noqa
         else:
             spec = spec.message
             spec["parentId"] = parent_id
+            spec["metadata"] = [
+                {
+                "sourceId": "UserInput",
+                "typeId": "Cvss",
+                "payload": json.dumps(spec.get("metrics")) if spec.get("metrics") else ""
+                }
+            ]
         if not app.app.GLOBAL_DISARM and not disarm:
             rich_print("[bright_black]Submit processing request for group {}".format(spec.get("name")))
             op_request = app.API_MP.post(app.API_MP.url_asset_group_processing, spec)
